@@ -67,8 +67,8 @@
 	
 	state = newState;
 	
-	if ([self.delegate respondsToSelector:@selector(pullToRefreshController:changedState:)])
-		[self.delegate pullToRefreshController:self changedState:state];
+	if ([self.delegate respondsToSelector:@selector(pullToRefreshController:didChangeToState:)])
+		[self.delegate pullToRefreshController:self didChangeToState:state];
 }
 
 - (void)startRefreshing {

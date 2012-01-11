@@ -51,5 +51,5 @@ enum {
 
 
 @protocol DCTPullToRefreshControllerDelegate <NSObject>
-- (void)pullToRefreshController:(DCTPullToRefreshController*)controller changedState:(DCTPullToRefreshControllerState)state;
+- (void)pullToRefreshController:(DCTPullToRefreshController*)controller didChangeToState:(DCTPullToRefreshControllerState)state;
 @end
