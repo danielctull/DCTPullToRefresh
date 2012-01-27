@@ -12,10 +12,10 @@
 
 
 enum {
-    DCTPullToRefreshControllerStateIdle = 0,
-    DCTPullToRefreshControllerStatePulled,
-    DCTPullToRefreshControllerStateRefreshing,
-} typedef DCTPullToRefreshControllerState;
+    DCTPullToRefreshStateIdle = 0,
+    DCTPullToRefreshStatePulled,
+    DCTPullToRefreshStateRefreshing,
+} typedef DCTPullToRefreshState;
 
 enum {
 	DCTPullToRefreshPlacementTop = 0,
@@ -31,7 +31,7 @@ enum {
 
 @property (nonatomic, dct_weak) IBOutlet id<DCTPullToRefreshControllerDelegate> delegate;
 
-@property (nonatomic, readonly) DCTPullToRefreshControllerState state;
+@property (nonatomic, readonly) DCTPullToRefreshState state;
 @property (nonatomic, readonly) CGFloat pulledValue;
 
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
@@ -60,5 +60,5 @@ enum {
 
 
 @protocol DCTPullToRefreshControllerDelegate <NSObject>
-- (void)pullToRefreshController:(DCTPullToRefreshController*)controller didChangeToState:(DCTPullToRefreshControllerState)state;
+- (void)pullToRefreshController:(DCTPullToRefreshController*)controller didChangeToState:(DCTPullToRefreshState)state;
 @end

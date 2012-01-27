@@ -11,7 +11,7 @@
 void* contentSizeContext = &contentSizeContext;
 
 @interface DCTPullToRefreshController ()
-@property (nonatomic, assign) DCTPullToRefreshControllerState state;
+@property (nonatomic, assign) DCTPullToRefreshState state;
 @property (nonatomic, assign) CGFloat pulledValue;
 - (void)dctInternal_addRefreshView;
 - (void)dctInternal_removeRefreshView;
@@ -73,21 +73,21 @@ void* contentSizeContext = &contentSizeContext;
 	
 	pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshControllerStateIdle && pulledValue > 0.0f)
-		self.state = DCTPullToRefreshControllerStatePulled;
+	if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
+		self.state = DCTPullToRefreshStatePulled;
 		
 	[self.refreshView pullToRefreshController:self changedPulledValue:pulledValue];	
 }
 
-- (void)setState:(DCTPullToRefreshControllerState)newState {
+- (void)setState:(DCTPullToRefreshState)newState {
 	
 	if (state == newState) return;
 	
-	if (newState == DCTPullToRefreshControllerStateRefreshing) {
+	if (newState == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshView];
 		[self dctInternal_addRefreshingView];
 
-	} else if (state == DCTPullToRefreshControllerStateRefreshing) {
+	} else if (state == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshingView];
 		[self dctInternal_addRefreshView];
 	}
@@ -99,11 +99,11 @@ void* contentSizeContext = &contentSizeContext;
 }
 
 - (void)startRefreshing {
-	self.state = DCTPullToRefreshControllerStateRefreshing;
+	self.state = DCTPullToRefreshStateRefreshing;
 }
 
 - (void)stopRefreshing {
-	self.state = DCTPullToRefreshControllerStateIdle;
+	self.state = DCTPullToRefreshStateIdle;
 }
 
 #pragma mark - UIScrollViewDelagate
@@ -126,10 +126,10 @@ void* contentSizeContext = &contentSizeContext;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     
     if (self.pulledValue > 1.0f)
-		self.state = DCTPullToRefreshControllerStateRefreshing;
+		self.state = DCTPullToRefreshStateRefreshing;
 		
 	else if (self.pulledValue > 0.0f)
-		self.state = DCTPullToRefreshControllerStateIdle;
+		self.state = DCTPullToRefreshStateIdle;
 }
 
 #pragma mark - Internal
@@ -194,7 +194,7 @@ void* contentSizeContext = &contentSizeContext;
 	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
 		self.refreshView.placement = placement;
 	
-	if (self.state == DCTPullToRefreshControllerStateRefreshing) {
+	if (self.state == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshingView];
 		[self dctInternal_addRefreshingView];	
 	} else {
