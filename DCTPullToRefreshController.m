@@ -31,8 +31,19 @@
 	if (self.refreshView) [self dctInternal_addRefreshView];
 }
 
+- (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
+	placement = newPlacement;
+	self.refreshView.placement = placement;
+	
+	if (self.state == DCTPullToRefreshControllerStateUp) {
+		[self dctInternal_removeRefreshView];
+		[self dctInternal_addRefreshView];
+	}
+}
+
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
 	refreshView = rv;
+	refreshView.placement = self.placement;
 	if (self.scrollView) [self dctInternal_addRefreshView];
 }
 
@@ -85,7 +96,7 @@
 	CGFloat distanceRequired = -self.refreshView.bounds.size.height;
 	CGFloat distanceMoved = self.scrollView.contentOffset.y;
 	
-	if (self.placement == DCTPullToRefreshControllerPlacementBottom)
+	if (self.placement == DCTPullToRefreshPlacementBottom)
 		distanceMoved = self.scrollView.contentSize.height - self.scrollView.bounds.size.height - self.scrollView.contentOffset.y;
 	
 	self.pulledValue = distanceMoved/distanceRequired;
@@ -106,7 +117,7 @@
 	CGRect newFrame = self.refreshView.frame;
 	newFrame.size.width = self.scrollView.bounds.size.width;
 	
-	if (self.placement == DCTPullToRefreshControllerPlacementTop)
+	if (self.placement == DCTPullToRefreshPlacementTop)
 		newFrame.origin.y = -newFrame.size.height;
 	else
 		newFrame.origin.y = self.scrollView.contentSize.height;
@@ -125,7 +136,7 @@
 	frame.size.width = self.scrollView.bounds.size.width;
 	UIEdgeInsets insets = self.scrollView.contentInset;
 	
-	if (self.placement == DCTPullToRefreshControllerPlacementTop) {
+	if (self.placement == DCTPullToRefreshPlacementTop) {
 		frame.origin.y = -frame.size.height;
 		insets.top += frame.size.height;
 	} else {
@@ -145,7 +156,7 @@
 	CGRect frame = self.refreshingView.bounds;
 	UIEdgeInsets insets = self.scrollView.contentInset;
 	
-	if (self.placement == DCTPullToRefreshControllerPlacementTop)
+	if (self.placement == DCTPullToRefreshPlacementTop)
 		insets.top -= frame.size.height;
 	else
 		insets.bottom -= frame.size.height;
