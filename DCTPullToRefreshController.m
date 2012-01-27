@@ -118,16 +118,22 @@
 	UIEdgeInsets insets = self.scrollView.contentInset;
 	insets.top += frame.size.height;
 	self.refreshingView.frame = frame;
-	self.scrollView.contentInset = insets;
 	[self.scrollView addSubview:self.refreshingView];
+	
+	[UIView animateWithDuration:1.0f/3.0f animations:^{
+		self.scrollView.contentInset = insets;
+	}];	
 }
 
 - (void)dctInternal_removeRefreshingView {
 	CGRect frame = self.refreshingView.bounds;
 	UIEdgeInsets insets = self.scrollView.contentInset;
 	insets.top -= frame.size.height;
-	self.scrollView.contentInset = insets;
-	[self.refreshingView removeFromSuperview];
+	[UIView animateWithDuration:1.0f/3.0f animations:^{
+		self.scrollView.contentInset = insets;
+	} completion:^(BOOL finished) {
+		[self.refreshingView removeFromSuperview];
+	}];
 }
 
 @end
