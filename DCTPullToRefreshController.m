@@ -112,8 +112,13 @@ void* contentSizeContext = &contentSizeContext;
 	CGFloat distanceRequired = -self.refreshView.bounds.size.height;
 	CGFloat distanceMoved = self.scrollView.contentOffset.y;
 	
-	if (self.placement == DCTPullToRefreshPlacementBottom)
-		distanceMoved = self.scrollView.contentSize.height - self.scrollView.bounds.size.height - self.scrollView.contentOffset.y;
+	if (self.placement == DCTPullToRefreshPlacementBottom) {
+		
+		if (self.scrollView.contentSize.height < self.scrollView.bounds.size.height)
+			distanceMoved = -self.scrollView.contentOffset.y;
+		else 
+			distanceMoved = self.scrollView.contentSize.height - self.scrollView.bounds.size.height - self.scrollView.contentOffset.y;
+	}
 	
 	self.pulledValue = distanceMoved/distanceRequired;
 }
@@ -136,7 +141,7 @@ void* contentSizeContext = &contentSizeContext;
 	if (self.placement == DCTPullToRefreshPlacementTop)
 		newFrame.origin.y = -newFrame.size.height;
 	else
-		newFrame.origin.y = self.scrollView.contentSize.height;
+		newFrame.origin.y = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
 	
 	self.refreshView.frame = newFrame;
 	self.refreshView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -156,7 +161,7 @@ void* contentSizeContext = &contentSizeContext;
 		frame.origin.y = -frame.size.height;
 		insets.top += frame.size.height;
 	} else {
-		frame.origin.y = self.scrollView.contentSize.height;
+		frame.origin.y = MAX(self.scrollView.contentSize.height, (self.scrollView.bounds.size.height - frame.size.height));
 		insets.bottom += frame.size.height;
 	}
 		
