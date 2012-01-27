@@ -8,6 +8,8 @@
 
 #import "DCTPullToRefreshController.h"
 
+void* contentSizeContext = &contentSizeContext;
+
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshControllerState state;
 @property (nonatomic, assign) CGFloat pulledValue;
@@ -28,8 +30,18 @@
 @synthesize placement;
 
 - (void)setScrollView:(UIScrollView *)sv {
+	[scrollView removeObserver:self forKeyPath:@"contentSize" context:contentSizeContext];
 	scrollView = sv;
+	[scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:contentSizeContext];
 	if (self.refreshView) [self dctInternal_addRefreshView];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	
+	if (context != contentSizeContext)
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	
+	[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
@@ -40,44 +52,17 @@
 	[self dctInternal_setupRefreshPlacement];
 }
 
-- (void)dctInternal_setupRefreshPlacement {
-	
-	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
-		self.refreshView.placement = placement;
-	
-	if (self.placement == DCTPullToRefreshPlacementTop) {
-		self.refreshView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
-		self.refreshingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
-	} else {
-		self.refreshView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin);
-		self.refreshingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin);
-	}
-	
-	NSLog(@"-------------");
-	NSLog(@"Refreshing view: %@", self.refreshingView);
-	NSLog(@"Refresh view: %@", self.refreshView);
-	
-	if (self.state == DCTPullToRefreshControllerStateRefreshing) {
-		[self dctInternal_removeRefreshingView];
-		[self dctInternal_addRefreshingView];	
-	} else {
-		[self dctInternal_removeRefreshView];
-		[self dctInternal_addRefreshView];
-	}
-}
-
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
 	refreshView = rv;
 	if (self.scrollView) [self dctInternal_addRefreshView];
-	[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)setRefreshingView:(UIView *)view {
 	refreshingView = view;
-	[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)dealloc {
+	[scrollView removeObserver:self forKeyPath:@"contentSize" context:contentSizeContext];
 	dct_nil(delegate);
 }
 
@@ -196,6 +181,23 @@
 	} completion:^(BOOL finished) {
 		[self.refreshingView removeFromSuperview];
 	}];
+}
+
+- (void)dctInternal_setupRefreshPlacement {
+	
+	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
+		self.refreshView.placement = placement;
+	
+	if (self.placement != DCTPullToRefreshPlacementBottom)
+		return;
+	
+	if (self.state == DCTPullToRefreshControllerStateRefreshing) {
+		[self dctInternal_removeRefreshingView];
+		[self dctInternal_addRefreshingView];	
+	} else {
+		[self dctInternal_removeRefreshView];
+		[self dctInternal_addRefreshView];
+	}
 }
 
 @end
