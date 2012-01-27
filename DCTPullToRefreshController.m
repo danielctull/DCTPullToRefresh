@@ -15,6 +15,7 @@
 - (void)dctInternal_removeRefreshView;
 - (void)dctInternal_addRefreshingView;
 - (void)dctInternal_removeRefreshingView;
+- (void)dctInternal_setupRefreshPlacement;
 @end
 
 @implementation DCTPullToRefreshController
@@ -32,12 +33,34 @@
 }
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
+	
+	if (placement == newPlacement) return;
+	
 	placement = newPlacement;
+	[self dctInternal_setupRefreshPlacement];
+}
+
+- (void)dctInternal_setupRefreshPlacement {
 	
 	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
 		self.refreshView.placement = placement;
 	
-	if (self.state == DCTPullToRefreshControllerStateIdle) {
+	if (self.placement == DCTPullToRefreshPlacementTop) {
+		self.refreshView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
+		self.refreshingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
+	} else {
+		self.refreshView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin);
+		self.refreshingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin);
+	}
+	
+	NSLog(@"-------------");
+	NSLog(@"Refreshing view: %@", self.refreshingView);
+	NSLog(@"Refresh view: %@", self.refreshView);
+	
+	if (self.state == DCTPullToRefreshControllerStateRefreshing) {
+		[self dctInternal_removeRefreshingView];
+		[self dctInternal_addRefreshingView];	
+	} else {
 		[self dctInternal_removeRefreshView];
 		[self dctInternal_addRefreshView];
 	}
@@ -45,11 +68,13 @@
 
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
 	refreshView = rv;
-	
-	if ([refreshView respondsToSelector:@selector(setPlacement:)])
-		refreshView.placement = placement;
-	
 	if (self.scrollView) [self dctInternal_addRefreshView];
+	[self dctInternal_setupRefreshPlacement];
+}
+
+- (void)setRefreshingView:(UIView *)view {
+	refreshingView = view;
+	[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)dealloc {
