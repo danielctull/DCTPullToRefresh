@@ -41,7 +41,8 @@ void* contentSizeContext = &contentSizeContext;
 	if (context != contentSizeContext)
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	[self dctInternal_setupRefreshPlacement];
+	if (self.placement == DCTPullToRefreshPlacementBottom)
+		[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
@@ -187,9 +188,6 @@ void* contentSizeContext = &contentSizeContext;
 	
 	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
 		self.refreshView.placement = placement;
-	
-	if (self.placement != DCTPullToRefreshPlacementBottom)
-		return;
 	
 	if (self.state == DCTPullToRefreshControllerStateRefreshing) {
 		[self dctInternal_removeRefreshingView];
