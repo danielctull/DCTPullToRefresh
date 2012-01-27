@@ -16,7 +16,7 @@ void* contentSizeContext = &contentSizeContext;
 - (void)dctInternal_addRefreshView;
 - (void)dctInternal_removeRefreshView;
 - (void)dctInternal_addRefreshingView;
-- (void)dctInternal_removeRefreshingView;
+- (void)dctInternal_removeRefreshingViewCompletion:(void(^)())completion;
 - (void)dctInternal_setupRefreshPlacement;
 @end
 
@@ -84,8 +84,9 @@ void* contentSizeContext = &contentSizeContext;
 		[self dctInternal_addRefreshingView];
 
 	} else if (state == DCTPullToRefreshStateRefreshing) {
-		[self dctInternal_removeRefreshingView];
-		[self dctInternal_addRefreshView];
+		[self dctInternal_removeRefreshingViewCompletion:^{
+			[self dctInternal_addRefreshView];
+		}];
 	}
 	
 	state = newState;
@@ -169,7 +170,7 @@ void* contentSizeContext = &contentSizeContext;
 	}];	
 }
 
-- (void)dctInternal_removeRefreshingView {
+- (void)dctInternal_removeRefreshingViewCompletion:(void(^)())completion {
 	CGRect frame = self.refreshingView.bounds;
 	UIEdgeInsets insets = self.scrollView.contentInset;
 	
@@ -182,13 +183,14 @@ void* contentSizeContext = &contentSizeContext;
 		self.scrollView.contentInset = insets;
 	} completion:^(BOOL finished) {
 		[self.refreshingView removeFromSuperview];
+		if (completion != NULL) completion();
 	}];
 }
 
 - (void)dctInternal_setupRefreshPlacement {
 		
 	if (self.state == DCTPullToRefreshStateRefreshing) {
-		[self dctInternal_removeRefreshingView];
+		[self dctInternal_removeRefreshingViewCompletion:NULL];
 		[self dctInternal_addRefreshingView];	
 	} else {
 		[self dctInternal_removeRefreshView];
