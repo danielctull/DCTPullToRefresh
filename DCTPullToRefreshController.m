@@ -24,7 +24,7 @@
 @synthesize scrollView;
 @synthesize refreshView;
 @synthesize refreshingView;
-
+@synthesize placement;
 
 - (void)setScrollView:(UIScrollView *)sv {
 	scrollView = sv;
@@ -45,7 +45,7 @@
 	if (pulledValue == newPulledValue) return;
 	
 	pulledValue = newPulledValue;
-		
+	
 	if (self.state == DCTPullToRefreshControllerStateUp && pulledValue > 0.0f)
 		self.state = DCTPullToRefreshControllerStatePulled;
 		
@@ -81,9 +81,13 @@
 
 #pragma mark - UIScrollViewDelagate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {	
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	CGFloat distanceRequired = -self.refreshView.bounds.size.height;
 	CGFloat distanceMoved = self.scrollView.contentOffset.y;
+	
+	if (self.placement == DCTPullToRefreshControllerPlacementBottom)
+		distanceMoved = self.scrollView.contentSize.height - self.scrollView.bounds.size.height - self.scrollView.contentOffset.y;
+	
 	self.pulledValue = distanceMoved/distanceRequired;
 }
 
@@ -101,7 +105,12 @@
 - (void)dctInternal_addRefreshView {
 	CGRect newFrame = self.refreshView.frame;
 	newFrame.size.width = self.scrollView.bounds.size.width;
-	newFrame.origin.y = -newFrame.size.height;
+	
+	if (self.placement == DCTPullToRefreshControllerPlacementTop)
+		newFrame.origin.y = -newFrame.size.height;
+	else
+		newFrame.origin.y = self.scrollView.contentSize.height;
+	
 	self.refreshView.frame = newFrame;
 	self.refreshView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	[self.scrollView addSubview:self.refreshView];
@@ -114,9 +123,16 @@
 - (void)dctInternal_addRefreshingView {
 	CGRect frame = self.refreshingView.bounds;
 	frame.size.width = self.scrollView.bounds.size.width;
-	frame.origin.y = -frame.size.height;
 	UIEdgeInsets insets = self.scrollView.contentInset;
-	insets.top += frame.size.height;
+	
+	if (self.placement == DCTPullToRefreshControllerPlacementTop) {
+		frame.origin.y = -frame.size.height;
+		insets.top += frame.size.height;
+	} else {
+		frame.origin.y = self.scrollView.contentSize.height;
+		insets.bottom += frame.size.height;
+	}
+		
 	self.refreshingView.frame = frame;
 	[self.scrollView addSubview:self.refreshingView];
 	
@@ -128,7 +144,12 @@
 - (void)dctInternal_removeRefreshingView {
 	CGRect frame = self.refreshingView.bounds;
 	UIEdgeInsets insets = self.scrollView.contentInset;
-	insets.top -= frame.size.height;
+	
+	if (self.placement == DCTPullToRefreshControllerPlacementTop)
+		insets.top -= frame.size.height;
+	else
+		insets.bottom -= frame.size.height;
+	
 	[UIView animateWithDuration:1.0f/3.0f animations:^{
 		self.scrollView.contentInset = insets;
 	} completion:^(BOOL finished) {

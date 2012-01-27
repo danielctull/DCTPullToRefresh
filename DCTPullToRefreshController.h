@@ -17,6 +17,11 @@ enum {
     DCTPullToRefreshControllerStateRefreshing,
 } typedef DCTPullToRefreshControllerState;
 
+enum {
+	DCTPullToRefreshControllerPlacementTop = 0,
+	DCTPullToRefreshControllerPlacementBottom
+} typedef DCTPullToRefreshControllerPlacement;
+
 @protocol DCTPullToRefreshControllerDelegate;
 @protocol DCTPullToRefreshControllerRefreshView;
 
@@ -32,6 +37,7 @@ enum {
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIView<DCTPullToRefreshControllerRefreshView> *refreshView;
 @property (nonatomic, strong) IBOutlet UIView *refreshingView;
+@property (nonatomic, assign) DCTPullToRefreshControllerPlacement placement;
 
 - (void)startRefreshing;
 - (void)stopRefreshing;
