@@ -91,8 +91,7 @@ void* contentSizeContext = &contentSizeContext;
 	
 	state = newState;
 	
-	if ([self.delegate respondsToSelector:@selector(pullToRefreshControllerDidChangeState:)])
-		[self.delegate pullToRefreshControllerDidChangeState:self];
+	[self.delegate pullToRefreshControllerDidChangeState:self];
 }
 
 - (void)startRefreshing {
