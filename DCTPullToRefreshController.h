@@ -51,8 +51,10 @@ enum {
 
 
 @protocol DCTPullToRefreshControllerRefreshView <NSObject>
-@property (nonatomic, assign) DCTPullToRefreshPlacement placement;
 - (void)pullToRefreshController:(DCTPullToRefreshController *)controller changedPulledValue:(CGFloat)pulledValue;
+
+@optional
+@property (nonatomic, assign) DCTPullToRefreshPlacement placement;
 @end
 
 

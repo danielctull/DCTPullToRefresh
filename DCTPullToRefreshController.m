@@ -33,7 +33,9 @@
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
 	placement = newPlacement;
-	self.refreshView.placement = placement;
+	
+	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
+		self.refreshView.placement = placement;
 	
 	if (self.state == DCTPullToRefreshControllerStateUp) {
 		[self dctInternal_removeRefreshView];
@@ -43,7 +45,10 @@
 
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
 	refreshView = rv;
-	refreshView.placement = self.placement;
+	
+	if ([refreshView respondsToSelector:@selector(setPlacement:)])
+		refreshView.placement = placement;
+	
 	if (self.scrollView) [self dctInternal_addRefreshView];
 }
 
