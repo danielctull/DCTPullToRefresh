@@ -11,9 +11,10 @@
 
 @implementation DCTPullToRefreshView
 @synthesize rotatingView;
-@synthesize placement;
 
-- (void)pullToRefreshController:(DCTPullToRefreshController *)controller changedPulledValue:(CGFloat)pulledValue {
+- (void)pullToRefreshControllerDidChangePulledValue:(DCTPullToRefreshController *)controller {
+	
+	CGFloat pulledValue = controller.pulledValue;
 	
 	if (pulledValue < 0.5)
 		pulledValue = 0.0f;
@@ -22,7 +23,7 @@
 	else
 		pulledValue = 2*(pulledValue-0.5f);
 	
-	if (self.placement == DCTPullToRefreshPlacementBottom)
+	if (controller.placement == DCTPullToRefreshPlacementBottom)
 		pulledValue += 1.0f;
 	
 	self.rotatingView.layer.transform = CATransform3DMakeRotation(M_PI*pulledValue, 0.0f, 0.0f, 1.0f);

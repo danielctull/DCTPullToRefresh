@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "dct_weak.h"
 
-
-
 enum {
     DCTPullToRefreshStateIdle = 0,
     DCTPullToRefreshStatePulled,
@@ -51,10 +49,7 @@ enum {
 
 
 @protocol DCTPullToRefreshControllerRefreshView <NSObject>
-- (void)pullToRefreshController:(DCTPullToRefreshController *)controller changedPulledValue:(CGFloat)pulledValue;
-
-@optional
-@property (nonatomic, assign) DCTPullToRefreshPlacement placement;
+- (void)pullToRefreshControllerDidChangePulledValue:(DCTPullToRefreshController *)controller;
 @end
 
 

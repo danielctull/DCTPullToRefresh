@@ -58,10 +58,6 @@ void* contentSizeContext = &contentSizeContext;
 	if (self.scrollView) [self dctInternal_addRefreshView];
 }
 
-- (void)setRefreshingView:(UIView *)view {
-	refreshingView = view;
-}
-
 - (void)dealloc {
 	[scrollView removeObserver:self forKeyPath:@"contentSize" context:contentSizeContext];
 	dct_nil(delegate);
@@ -76,7 +72,7 @@ void* contentSizeContext = &contentSizeContext;
 	if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
 		self.state = DCTPullToRefreshStatePulled;
 		
-	[self.refreshView pullToRefreshController:self changedPulledValue:pulledValue];	
+	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];	
 }
 
 - (void)setState:(DCTPullToRefreshState)newState {
@@ -190,10 +186,7 @@ void* contentSizeContext = &contentSizeContext;
 }
 
 - (void)dctInternal_setupRefreshPlacement {
-	
-	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
-		self.refreshView.placement = placement;
-	
+		
 	if (self.state == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshingView];
 		[self dctInternal_addRefreshingView];	
