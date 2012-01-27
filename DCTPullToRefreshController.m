@@ -47,7 +47,7 @@
 	pulledValue = newPulledValue;
 		
 	if (self.state == DCTPullToRefreshControllerStateUp && pulledValue > 0.0f)
-		self.state = DCTPullToRefreshControllerStatePulledDown;
+		self.state = DCTPullToRefreshControllerStatePulled;
 		
 	[self.refreshView pullToRefreshController:self changedPulledValue:pulledValue];	
 }

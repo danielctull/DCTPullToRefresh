@@ -13,7 +13,7 @@
 
 enum {
     DCTPullToRefreshControllerStateUp = 0,
-    DCTPullToRefreshControllerStatePulledDown,
+    DCTPullToRefreshControllerStatePulled,
     DCTPullToRefreshControllerStateRefreshing,
 } typedef DCTPullToRefreshControllerState;
 
