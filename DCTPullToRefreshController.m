@@ -37,7 +37,7 @@
 	if ([self.refreshView respondsToSelector:@selector(setPlacement:)])
 		self.refreshView.placement = placement;
 	
-	if (self.state == DCTPullToRefreshControllerStateUp) {
+	if (self.state == DCTPullToRefreshControllerStateIdle) {
 		[self dctInternal_removeRefreshView];
 		[self dctInternal_addRefreshView];
 	}
@@ -62,7 +62,7 @@
 	
 	pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshControllerStateUp && pulledValue > 0.0f)
+	if (self.state == DCTPullToRefreshControllerStateIdle && pulledValue > 0.0f)
 		self.state = DCTPullToRefreshControllerStatePulled;
 		
 	[self.refreshView pullToRefreshController:self changedPulledValue:pulledValue];	
@@ -92,7 +92,7 @@
 }
 
 - (void)stopRefreshing {
-	self.state = DCTPullToRefreshControllerStateUp;
+	self.state = DCTPullToRefreshControllerStateIdle;
 }
 
 #pragma mark - UIScrollViewDelagate
@@ -113,7 +113,7 @@
 		self.state = DCTPullToRefreshControllerStateRefreshing;
 		
 	else if (self.pulledValue > 0.0f)
-		self.state = DCTPullToRefreshControllerStateUp;
+		self.state = DCTPullToRefreshControllerStateIdle;
 }
 
 #pragma mark - Internal
