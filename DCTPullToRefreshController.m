@@ -8,6 +8,12 @@
 
 #import "DCTPullToRefreshController.h"
 
+NSString * const DCTPullToRefreshStateString[] = {
+	@"DCTPullToRefreshStateIdle",
+	@"DCTPullToRefreshStatePulled",
+	@"DCTPullToRefreshStateRefreshing"
+};
+
 void* contentSizeContext = &contentSizeContext;
 
 @interface DCTPullToRefreshController ()
@@ -69,10 +75,14 @@ void* contentSizeContext = &contentSizeContext;
 	
 	pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
-		self.state = DCTPullToRefreshStatePulled;
+	if (self.state == DCTPullToRefreshStatePulled && pulledValue <= 0.0f)
+		self.state = DCTPullToRefreshStateIdle;
 		
-	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];	
+	else if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
+		self.state = DCTPullToRefreshStatePulled;
+	
+	if (self.state == DCTPullToRefreshStatePulled)
+		[self.refreshView pullToRefreshControllerDidChangePulledValue:self];
 }
 
 - (void)setState:(DCTPullToRefreshState)newState {
@@ -121,11 +131,17 @@ void* contentSizeContext = &contentSizeContext;
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     
-    if (self.pulledValue > 1.0f)
+    if (self.state == DCTPullToRefreshStatePulled)
 		self.state = DCTPullToRefreshStateRefreshing;
-		
-	else if (self.pulledValue > 0.0f)
+	else
 		self.state = DCTPullToRefreshStateIdle;
+}
+
+- (NSString *)description {
+	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\">",
+			NSStringFromClass([self class]),
+			self,
+			DCTPullToRefreshStateString[self.state]];
 }
 
 #pragma mark - Internal
