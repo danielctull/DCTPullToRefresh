@@ -10,6 +10,7 @@
 
 NSString * const DCTPullToRefreshStateString[] = {
 	@"DCTPullToRefreshStateIdle",
+	@"DCTPullToRefreshStatePulling",
 	@"DCTPullToRefreshStatePulled",
 	@"DCTPullToRefreshStateRefreshing"
 };
@@ -75,14 +76,18 @@ void* contentSizeContext = &contentSizeContext;
 	
 	pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshStatePulled && pulledValue <= 0.0f)
+	if (self.state == DCTPullToRefreshStateRefreshing) return;
+	
+	if (pulledValue <= 0.0f)
 		self.state = DCTPullToRefreshStateIdle;
 		
-	else if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
+	else if (pulledValue <= 1.0f)
+		self.state = DCTPullToRefreshStatePulling;
+	
+	else
 		self.state = DCTPullToRefreshStatePulled;
 	
-	if (self.state == DCTPullToRefreshStatePulled)
-		[self.refreshView pullToRefreshControllerDidChangePulledValue:self];
+	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];
 }
 
 - (void)setState:(DCTPullToRefreshState)newState {

@@ -9,12 +9,19 @@
 #import "DCTPullToRefreshView.h"
 #import <QuartzCore/QuartzCore.h>
 
-@implementation DCTPullToRefreshView
+@implementation DCTPullToRefreshView {
+	CGFloat lastPulledValue;
+}
 @synthesize rotatingView;
 
 - (void)pullToRefreshControllerDidChangePulledValue:(DCTPullToRefreshController *)controller {
 	
 	CGFloat pulledValue = controller.pulledValue;
+	
+	if (pulledValue < 0.0f && lastPulledValue < 0.0f) return;
+	if (pulledValue > 1.0f && lastPulledValue > 1.0f) return;
+	
+	lastPulledValue = pulledValue;
 	
 	if (pulledValue < 0.5)
 		pulledValue = 0.0f;
