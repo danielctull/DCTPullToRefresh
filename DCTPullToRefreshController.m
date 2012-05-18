@@ -208,7 +208,7 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	self.refreshView.frame = newFrame;
 	self.refreshView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[self.scrollView addSubview:self.refreshView];
+	[self.scrollView insertSubview:self.refreshView atIndex:0];
 }
 
 - (void)dctInternal_removeRefreshView {
@@ -229,7 +229,7 @@ NSString * const DCTPullToRefreshStateString[] = {
 	}
 		
 	self.refreshingView.frame = frame;
-	[self.scrollView addSubview:self.refreshingView];
+	[self.scrollView insertSubview:self.refreshingView atIndex:0];
 	
 	[UIView animateWithDuration:1.0f/3.0f animations:^{
 		self.scrollView.contentInset = insets;
