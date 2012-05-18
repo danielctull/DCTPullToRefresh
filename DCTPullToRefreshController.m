@@ -31,9 +31,7 @@ void* contentSizeContext = &contentSizeContext;
 - (void)dctInternal_setupRefreshPlacement;
 @end
 
-@implementation DCTPullToRefreshController {
-	BOOL preventOffsetUpdates;
-}
+@implementation DCTPullToRefreshController
 @synthesize delegate = _delegate;
 @synthesize state = _state;
 @synthesize pulledValue = _pulledValue;
@@ -117,10 +115,10 @@ void* contentSizeContext = &contentSizeContext;
 	
 	if (self.state == DCTPullToRefreshStateRefreshing) return;
 	
-	if (pulledValue <= 0.0f)
+	if (_pulledValue <= 0.0f)
 		self.state = DCTPullToRefreshStateIdle;
 		
-	else if (pulledValue <= 1.0f)
+	else if (_pulledValue <= 1.0f)
 		self.state = DCTPullToRefreshStatePulling;
 	
 	else
@@ -129,21 +127,22 @@ void* contentSizeContext = &contentSizeContext;
 	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];
 }
 
-- (void)setState:(DCTPullToRefreshState)newState {
+- (void)setState:(DCTPullToRefreshState)state {
 	
-	if (_state == newState) return;
+	if (_state == state) return;
 	
-	if (newState == DCTPullToRefreshStateRefreshing) {
+	DCTPullToRefreshState oldState = _state;
+	_state = state;
+	
+	if (_state == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshView];
 		[self dctInternal_addRefreshingView];
 
-	} else if (_state == DCTPullToRefreshStateRefreshing) {
+	} else if (oldState == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshingViewCompletion:^{
 			[self dctInternal_addRefreshView];
 		}];
 	}
-	
-	_state = newState;
 	
 	if ([self.delegate respondsToSelector:@selector(pullToRefreshControllerDidChangeState:)])
 		[self.delegate pullToRefreshControllerDidChangeState:self];
@@ -166,8 +165,6 @@ void* contentSizeContext = &contentSizeContext;
 
 - (void)scrollView:(UIScrollView *)scrollView didChangeContentOffset:(CGPoint)contentOffset {
 	
-	if (preventOffsetUpdates) return;
-	
 	if ([scrollView isDragging]) {
 		
 		CGFloat distanceRequired = -self.refreshView.bounds.size.height;
@@ -188,14 +185,11 @@ void* contentSizeContext = &contentSizeContext;
 		return;
 	}
 	
-	preventOffsetUpdates = YES;
-	
 	if (self.state == DCTPullToRefreshStatePulled)
 		self.state = DCTPullToRefreshStateRefreshing;
-	else
-		self.state = DCTPullToRefreshStateIdle;
 	
-	preventOffsetUpdates = NO;
+	else if (self.state != DCTPullToRefreshStateRefreshing)
+		self.state = DCTPullToRefreshStateIdle;
 }
 
 - (NSString *)description {
