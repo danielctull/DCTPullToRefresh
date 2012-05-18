@@ -9,6 +9,9 @@
 #import "DCTPullToRefreshController.h"
 
 void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
+NSString *const DCTPullToRefreshControllerContentSizeKey = @"contentSize";
+NSString *const DCTPullToRefreshControllerContentOffsetKey = @"contentOffset";
+
 
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshState state;
@@ -20,7 +23,9 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 - (void)dctInternal_setupRefreshPlacement;
 @end
 
-@implementation DCTPullToRefreshController
+@implementation DCTPullToRefreshController {
+	BOOL preventOffsetUpdates;
+}
 @synthesize delegate = _delegate;
 @synthesize state = _state;
 @synthesize pulledValue = _pulledValue;
@@ -29,20 +34,58 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 @synthesize refreshingView = _refreshingView;
 @synthesize placement = _placement;
 
-- (void)setScrollView:(UIScrollView *)sv {
-	[_scrollView removeObserver:self forKeyPath:@"contentSize" context:DCTPullToRefreshControllerContext];
-	_scrollView = sv;
-	[_scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:DCTPullToRefreshControllerContext];
-	if (self.refreshView) [self dctInternal_addRefreshView];
+#pragma mark - NSObject
+
+- (void)dealloc {
+	[_scrollView removeObserver:self forKeyPath:DCTPullToRefreshControllerContentSizeKey];
+	[_scrollView removeObserver:self forKeyPath:DCTPullToRefreshControllerContentOffsetKey];
+	dct_nil(delegate);
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath
+					  ofObject:(id)object
+						change:(NSDictionary *)change
+					   context:(void *)context {
 	
 	if (context != DCTPullToRefreshControllerContext)
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
-	if (self.placement == DCTPullToRefreshPlacementBottom)
-		[self dctInternal_setupRefreshPlacement];
+	if ([keyPath isEqualToString:DCTPullToRefreshControllerContentSizeKey]) {
+		[self scrollView:object didChangeContentSize:[[change objectForKey:NSKeyValueChangeNewKey] CGSizeValue]];
+		return;
+	}
+	
+	if ([keyPath isEqualToString:DCTPullToRefreshControllerContentOffsetKey]) {
+		[self scrollView:object didChangeContentOffset:[[change objectForKey:NSKeyValueChangeNewKey] CGPointValue]];
+		return;
+	}	
+}
+
+#pragma mark - DCTPullToRefreshController
+
+- (void)setScrollView:(UIScrollView *)scrollView {
+	
+	[_scrollView removeObserver:self
+					 forKeyPath:DCTPullToRefreshControllerContentSizeKey
+						context:DCTPullToRefreshControllerContext];
+	
+	[_scrollView removeObserver:self
+					 forKeyPath:DCTPullToRefreshControllerContentOffsetKey
+						context:DCTPullToRefreshControllerContext];
+	
+	_scrollView = scrollView;
+	
+	[_scrollView addObserver:self
+				  forKeyPath:DCTPullToRefreshControllerContentSizeKey
+					 options:NSKeyValueObservingOptionNew
+					 context:DCTPullToRefreshControllerContext];
+	
+	[_scrollView addObserver:self
+				  forKeyPath:DCTPullToRefreshControllerContentOffsetKey
+					 options:NSKeyValueObservingOptionNew
+					 context:DCTPullToRefreshControllerContext];
+	
+	if (self.refreshView) [self dctInternal_addRefreshView];
 }
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
@@ -56,11 +99,6 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
 	_refreshView = rv;
 	if (self.scrollView) [self dctInternal_addRefreshView];
-}
-
-- (void)dealloc {
-	[_scrollView removeObserver:self forKeyPath:@"contentSize" context:DCTPullToRefreshControllerContext];
-	dct_nil(delegate);
 }
 
 - (void)setPulledValue:(CGFloat)newPulledValue {
@@ -103,33 +141,47 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 	self.state = DCTPullToRefreshStateIdle;
 }
 
-#pragma mark - UIScrollViewDelagate
+#pragma mark - Internal
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	CGFloat distanceRequired = -self.refreshView.bounds.size.height;
-	CGFloat distanceMoved = self.scrollView.contentOffset.y;
+- (void)scrollView:(UIScrollView *)scrollView didChangeContentSize:(CGSize)contentSize {
+	if (self.placement == DCTPullToRefreshPlacementBottom)
+		[self dctInternal_setupRefreshPlacement];
+}
+
+- (void)scrollView:(UIScrollView *)scrollView didChangeContentOffset:(CGPoint)contentOffset {
 	
-	if (self.placement == DCTPullToRefreshPlacementBottom) {
+	if (preventOffsetUpdates) return;
+	
+	if ([scrollView isDragging]) {
 		
-		if (self.scrollView.contentSize.height < self.scrollView.bounds.size.height)
-			distanceMoved = -self.scrollView.contentOffset.y;
-		else 
-			distanceMoved = self.scrollView.contentSize.height - self.scrollView.bounds.size.height - self.scrollView.contentOffset.y;
+		CGFloat distanceRequired = -self.refreshView.bounds.size.height;
+		CGFloat distanceMoved = contentOffset.y;
+		CGFloat scrollViewBoundsHeight = scrollView.bounds.size.height;
+		CGFloat scrollViewContentHeight = scrollView.contentSize.height;
+		
+		if (self.placement == DCTPullToRefreshPlacementBottom) {
+			
+			if (scrollViewContentHeight < scrollViewBoundsHeight)
+				distanceMoved = -contentOffset.y;
+			else 
+				distanceMoved = scrollViewContentHeight - scrollViewBoundsHeight - contentOffset.y;
+		}
+		
+		self.pulledValue = distanceMoved/distanceRequired;
+		
+		return;
 	}
 	
-	self.pulledValue = distanceMoved/distanceRequired;
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    
-    if (self.pulledValue > 1.0f)
+	preventOffsetUpdates = YES;
+	
+	if (self.pulledValue > 1.0f)
 		self.state = DCTPullToRefreshStateRefreshing;
-		
+	
 	else if (self.pulledValue > 0.0f)
 		self.state = DCTPullToRefreshStateIdle;
+	
+	preventOffsetUpdates = NO;
 }
-
-#pragma mark - Internal
 
 - (void)dctInternal_addRefreshView {
 	CGRect newFrame = self.refreshView.frame;
@@ -167,7 +219,7 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 	
 	[UIView animateWithDuration:1.0f/3.0f animations:^{
 		self.scrollView.contentInset = insets;
-	}];	
+	}];
 }
 
 - (void)dctInternal_removeRefreshingViewCompletion:(void(^)())completion {

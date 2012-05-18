@@ -25,7 +25,7 @@ enum {
 
 
 
-@interface DCTPullToRefreshController : NSObject <UIScrollViewDelegate>
+@interface DCTPullToRefreshController : NSObject
 
 @property (nonatomic, dct_weak) IBOutlet id<DCTPullToRefreshControllerDelegate> delegate;
 
@@ -39,10 +39,6 @@ enum {
 
 - (void)startRefreshing;
 - (void)stopRefreshing;
-
-// UIScrollViewDelegate methods. If this class isn't the delegate of it's scrollView property (for example when attached to a table view), call these methods from whatever is the scroll view's delegate
-- (void)scrollViewDidScroll:(UIScrollView *)aScrollView;
-- (void)scrollViewDidEndDragging:(UIScrollView *)aScrollView willDecelerate:(BOOL)decelerate;
 
 @end
 
