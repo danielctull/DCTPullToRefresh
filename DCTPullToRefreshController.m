@@ -19,8 +19,6 @@ NSString * const DCTPullToRefreshStateString[] = {
 	@"DCTPullToRefreshStateRefreshing"
 };
 
-void* contentSizeContext = &contentSizeContext;
-
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshState state;
 @property (nonatomic, assign) CGFloat pulledValue;
