@@ -65,6 +65,13 @@ NSString * const DCTPullToRefreshStateString[] = {
 	}	
 }
 
+- (NSString *)description {
+	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\">",
+			NSStringFromClass([self class]),
+			self,
+			DCTPullToRefreshStateString[self.state]];
+}
+
 #pragma mark - DCTPullToRefreshController
 
 - (void)setScrollView:(UIScrollView *)scrollView {
@@ -188,13 +195,6 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	else if (self.state != DCTPullToRefreshStateRefreshing)
 		self.state = DCTPullToRefreshStateIdle;
-}
-
-- (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\">",
-			NSStringFromClass([self class]),
-			self,
-			DCTPullToRefreshStateString[self.state]];
 }
 
 - (void)dctInternal_addRefreshView {
