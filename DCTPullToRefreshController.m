@@ -8,7 +8,7 @@
 
 #import "DCTPullToRefreshController.h"
 
-void* contentSizeContext = &contentSizeContext;
+void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshState state;
@@ -21,24 +21,24 @@ void* contentSizeContext = &contentSizeContext;
 @end
 
 @implementation DCTPullToRefreshController
-@synthesize delegate;
-@synthesize state;
-@synthesize pulledValue;
-@synthesize scrollView;
-@synthesize refreshView;
-@synthesize refreshingView;
-@synthesize placement;
+@synthesize delegate = _delegate;
+@synthesize state = _state;
+@synthesize pulledValue = _pulledValue;
+@synthesize scrollView = _scrollView;
+@synthesize refreshView = _refreshView;
+@synthesize refreshingView = _refreshingView;
+@synthesize placement = _placement;
 
 - (void)setScrollView:(UIScrollView *)sv {
-	[scrollView removeObserver:self forKeyPath:@"contentSize" context:contentSizeContext];
-	scrollView = sv;
-	[scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:contentSizeContext];
+	[_scrollView removeObserver:self forKeyPath:@"contentSize" context:DCTPullToRefreshControllerContext];
+	_scrollView = sv;
+	[_scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:DCTPullToRefreshControllerContext];
 	if (self.refreshView) [self dctInternal_addRefreshView];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	
-	if (context != contentSizeContext)
+	if (context != DCTPullToRefreshControllerContext)
 		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	
 	if (self.placement == DCTPullToRefreshPlacementBottom)
@@ -47,29 +47,29 @@ void* contentSizeContext = &contentSizeContext;
 
 - (void)setPlacement:(DCTPullToRefreshPlacement)newPlacement {
 	
-	if (placement == newPlacement) return;
+	if (_placement == newPlacement) return;
 	
-	placement = newPlacement;
+	_placement = newPlacement;
 	[self dctInternal_setupRefreshPlacement];
 }
 
 - (void)setRefreshView:(UIView<DCTPullToRefreshControllerRefreshView> *)rv {
-	refreshView = rv;
+	_refreshView = rv;
 	if (self.scrollView) [self dctInternal_addRefreshView];
 }
 
 - (void)dealloc {
-	[scrollView removeObserver:self forKeyPath:@"contentSize" context:contentSizeContext];
+	[_scrollView removeObserver:self forKeyPath:@"contentSize" context:DCTPullToRefreshControllerContext];
 	dct_nil(delegate);
 }
 
 - (void)setPulledValue:(CGFloat)newPulledValue {
 	
-	if (pulledValue == newPulledValue) return;
+	if (_pulledValue == newPulledValue) return;
 	
-	pulledValue = newPulledValue;
+	_pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshStateIdle && pulledValue > 0.0f)
+	if (self.state == DCTPullToRefreshStateIdle && _pulledValue > 0.0f)
 		self.state = DCTPullToRefreshStatePulled;
 		
 	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];	
@@ -77,19 +77,19 @@ void* contentSizeContext = &contentSizeContext;
 
 - (void)setState:(DCTPullToRefreshState)newState {
 	
-	if (state == newState) return;
+	if (_state == newState) return;
 	
 	if (newState == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshView];
 		[self dctInternal_addRefreshingView];
 
-	} else if (state == DCTPullToRefreshStateRefreshing) {
+	} else if (_state == DCTPullToRefreshStateRefreshing) {
 		[self dctInternal_removeRefreshingViewCompletion:^{
 			[self dctInternal_addRefreshView];
 		}];
 	}
 	
-	state = newState;
+	_state = newState;
 	
 	if ([self.delegate respondsToSelector:@selector(pullToRefreshControllerDidChangeState:)])
 		[self.delegate pullToRefreshControllerDidChangeState:self];
