@@ -170,25 +170,22 @@ NSString * const DCTPullToRefreshStateString[] = {
 
 - (void)scrollView:(UIScrollView *)scrollView didChangeContentOffset:(CGPoint)contentOffset {
 	
-	if ([scrollView isDragging]) {
+	CGFloat distanceRequired = -self.refreshView.bounds.size.height;
+	CGFloat distanceMoved = contentOffset.y;
+	CGFloat scrollViewBoundsHeight = scrollView.bounds.size.height;
+	CGFloat scrollViewContentHeight = scrollView.contentSize.height;
+	
+	if (self.placement == DCTPullToRefreshPlacementBottom) {
 		
-		CGFloat distanceRequired = -self.refreshView.bounds.size.height;
-		CGFloat distanceMoved = contentOffset.y;
-		CGFloat scrollViewBoundsHeight = scrollView.bounds.size.height;
-		CGFloat scrollViewContentHeight = scrollView.contentSize.height;
-		
-		if (self.placement == DCTPullToRefreshPlacementBottom) {
-			
-			if (scrollViewContentHeight < scrollViewBoundsHeight)
-				distanceMoved = -contentOffset.y;
-			else 
-				distanceMoved = scrollViewContentHeight - scrollViewBoundsHeight - contentOffset.y;
-		}
-		
-		self.pulledValue = distanceMoved/distanceRequired;
-		
-		return;
+		if (scrollViewContentHeight < scrollViewBoundsHeight)
+			distanceMoved = -contentOffset.y;
+		else 
+			distanceMoved = scrollViewContentHeight - scrollViewBoundsHeight - contentOffset.y;
 	}
+	
+	self.pulledValue = distanceMoved/distanceRequired;
+	
+	if ([scrollView isDragging]) return;
 	
 	if (self.state == DCTPullToRefreshStatePulled)
 		self.state = DCTPullToRefreshStateRefreshing;
