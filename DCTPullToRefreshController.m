@@ -12,6 +12,14 @@ void* DCTPullToRefreshControllerContext = &DCTPullToRefreshControllerContext;
 NSString *const DCTPullToRefreshControllerContentSizeKey = @"contentSize";
 NSString *const DCTPullToRefreshControllerContentOffsetKey = @"contentOffset";
 
+NSString * const DCTPullToRefreshStateString[] = {
+	@"DCTPullToRefreshStateIdle",
+	@"DCTPullToRefreshStatePulling",
+	@"DCTPullToRefreshStatePulled",
+	@"DCTPullToRefreshStateRefreshing"
+};
+
+void* contentSizeContext = &contentSizeContext;
 
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshState state;
@@ -107,10 +115,18 @@ NSString *const DCTPullToRefreshControllerContentOffsetKey = @"contentOffset";
 	
 	_pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshStateIdle && _pulledValue > 0.0f)
-		self.state = DCTPullToRefreshStatePulled;
+	if (self.state == DCTPullToRefreshStateRefreshing) return;
+	
+	if (pulledValue <= 0.0f)
+		self.state = DCTPullToRefreshStateIdle;
 		
-	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];	
+	else if (pulledValue <= 1.0f)
+		self.state = DCTPullToRefreshStatePulling;
+	
+	else
+		self.state = DCTPullToRefreshStatePulled;
+	
+	[self.refreshView pullToRefreshControllerDidChangePulledValue:self];
 }
 
 - (void)setState:(DCTPullToRefreshState)newState {
@@ -174,13 +190,19 @@ NSString *const DCTPullToRefreshControllerContentOffsetKey = @"contentOffset";
 	
 	preventOffsetUpdates = YES;
 	
-	if (self.pulledValue > 1.0f)
+	if (self.state == DCTPullToRefreshStatePulled)
 		self.state = DCTPullToRefreshStateRefreshing;
-	
-	else if (self.pulledValue > 0.0f)
+	else
 		self.state = DCTPullToRefreshStateIdle;
 	
 	preventOffsetUpdates = NO;
+}
+
+- (NSString *)description {
+	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\">",
+			NSStringFromClass([self class]),
+			self,
+			DCTPullToRefreshStateString[self.state]];
 }
 
 - (void)dctInternal_addRefreshView {
