@@ -66,10 +66,11 @@ NSString * const DCTPullToRefreshStateString[] = {
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\">",
+	return [NSString stringWithFormat:@"<%@: %p; state = \"%@\"; pulledValue = %f>",
 			NSStringFromClass([self class]),
 			self,
-			DCTPullToRefreshStateString[self.state]];
+			DCTPullToRefreshStateString[self.state],
+			self.pulledValue];
 }
 
 #pragma mark - DCTPullToRefreshController
@@ -120,11 +121,19 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	if (self.state == DCTPullToRefreshStateRefreshing) return;
 	
+	if (![self.scrollView isDragging] && self.state == DCTPullToRefreshStatePulled) {
+		self.state = DCTPullToRefreshStateRefreshing;
+		return;
+	}
+	
 	if (_pulledValue <= 0.0f)
 		self.state = DCTPullToRefreshStateIdle;
 		
-	else if (_pulledValue <= 1.0f)
+	else if ([self.scrollView isDragging] && _pulledValue < 1.0f)
 		self.state = DCTPullToRefreshStatePulling;
+	
+	else if (![self.scrollView isDragging] && _pulledValue < 1.0f)
+		self.state = DCTPullToRefreshStateClosing;
 	
 	else
 		self.state = DCTPullToRefreshStatePulled;
@@ -184,14 +193,6 @@ NSString * const DCTPullToRefreshStateString[] = {
 	}
 	
 	self.pulledValue = distanceMoved/distanceRequired;
-	
-	if ([scrollView isDragging]) return;
-	
-	if (self.state == DCTPullToRefreshStatePulled)
-		self.state = DCTPullToRefreshStateRefreshing;
-	
-	else if (self.state != DCTPullToRefreshStateRefreshing)
-		self.state = DCTPullToRefreshStateIdle;
 }
 
 - (void)dctInternal_addRefreshView {

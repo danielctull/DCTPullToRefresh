@@ -12,6 +12,7 @@
 enum {
     DCTPullToRefreshStateIdle = 0,
     DCTPullToRefreshStatePulling,
+	DCTPullToRefreshStateClosing,
 	DCTPullToRefreshStatePulled,
     DCTPullToRefreshStateRefreshing
 } typedef DCTPullToRefreshState;
