@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "dct_weak.h"
 #import "DCTPullToRefreshController.h"
 
 @interface DCTPullToRefreshView : UIView <DCTPullToRefreshControllerRefreshView>
-@property (nonatomic, dct_weak) IBOutlet UIView *rotatingView;
+@property (nonatomic, unsafe_unretained) IBOutlet UIView *rotatingView;
 @end

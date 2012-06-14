@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "dct_weak.h"
+#import <UIKit/UIKit.h>
 
 enum {
     DCTPullToRefreshStateIdle = 0,
@@ -29,7 +29,7 @@ enum {
 
 @interface DCTPullToRefreshController : NSObject
 
-@property (nonatomic, dct_weak) IBOutlet id<DCTPullToRefreshControllerDelegate> delegate;
+@property (nonatomic, unsafe_unretained) IBOutlet id<DCTPullToRefreshControllerDelegate> delegate;
 
 @property (nonatomic, readonly) DCTPullToRefreshState state;
 @property (nonatomic, readonly) CGFloat pulledValue;

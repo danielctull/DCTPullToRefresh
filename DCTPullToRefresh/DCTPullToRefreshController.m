@@ -43,7 +43,7 @@ NSString * const DCTPullToRefreshStateString[] = {
 - (void)dealloc {
 	[_scrollView removeObserver:self forKeyPath:DCTPullToRefreshControllerContentSizeKey];
 	[_scrollView removeObserver:self forKeyPath:DCTPullToRefreshControllerContentOffsetKey];
-	dct_nil(delegate);
+	_delegate = nil;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

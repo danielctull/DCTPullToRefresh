@@ -12,7 +12,11 @@
 @implementation DCTPullToRefreshView {
 	CGFloat lastPulledValue;
 }
-@synthesize rotatingView;
+@synthesize rotatingView = _rotatingView;
+
+- (void)dealloc {
+	_rotatingView = nil;
+}
 
 - (void)pullToRefreshControllerDidChangePulledValue:(DCTPullToRefreshController *)controller {
 	
