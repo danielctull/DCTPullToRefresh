@@ -22,21 +22,9 @@ NSString * const DCTPullToRefreshStateString[] = {
 @interface DCTPullToRefreshController ()
 @property (nonatomic, assign) DCTPullToRefreshState state;
 @property (nonatomic, assign) CGFloat pulledValue;
-- (void)dctInternal_addRefreshView;
-- (void)dctInternal_removeRefreshView;
-- (void)dctInternal_addRefreshingView;
-- (void)dctInternal_removeRefreshingViewCompletion:(void(^)())completion;
-- (void)dctInternal_setupRefreshPlacement;
 @end
 
 @implementation DCTPullToRefreshController
-@synthesize delegate = _delegate;
-@synthesize state = _state;
-@synthesize pulledValue = _pulledValue;
-@synthesize scrollView = _scrollView;
-@synthesize refreshView = _refreshView;
-@synthesize refreshingView = _refreshingView;
-@synthesize placement = _placement;
 
 #pragma mark - NSObject
 
