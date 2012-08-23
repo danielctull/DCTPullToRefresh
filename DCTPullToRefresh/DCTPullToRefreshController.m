@@ -107,10 +107,10 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	_pulledValue = newPulledValue;
 	
-	if (self.state == DCTPullToRefreshStateRefreshing) return;
+	if (self.state > DCTPullToRefreshStatePulled) return;
 	
 	if (![self.scrollView isDragging] && self.state == DCTPullToRefreshStatePulled) {
-		self.state = DCTPullToRefreshStateRefreshing;
+		self.state = DCTPullToRefreshStateReleased;
 		return;
 	}
 	
@@ -148,6 +148,9 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	if ([self.delegate respondsToSelector:@selector(pullToRefreshControllerDidChangeState:)])
 		[self.delegate pullToRefreshControllerDidChangeState:self];
+
+	if (_state == DCTPullToRefreshStateReleased)
+		self.state = DCTPullToRefreshStateRefreshing;
 }
 
 - (void)startRefreshing {
