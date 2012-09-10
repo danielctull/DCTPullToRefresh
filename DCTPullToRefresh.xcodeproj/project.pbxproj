@@ -7,18 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24F1B09715FE4D5700437962 /* DCTPullToRefresh.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 24F6ECF0158A32E300CEDD41 /* DCTPullToRefresh.h */; };
+		24F1B09815FE4D5700437962 /* DCTPullToRefreshController.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 24F6ED13158A332B00CEDD41 /* DCTPullToRefreshController.h */; };
+		24F1B09915FE4D5700437962 /* DCTPullToRefreshView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 24F6ED15158A332B00CEDD41 /* DCTPullToRefreshView.h */; };
 		24F6ECEC158A32E300CEDD41 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F6ECEB158A32E300CEDD41 /* Foundation.framework */; };
 		24F6ECFA158A32E400CEDD41 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F6ECF9158A32E400CEDD41 /* SenTestingKit.framework */; };
 		24F6ECFD158A32E400CEDD41 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F6ECEB158A32E300CEDD41 /* Foundation.framework */; };
 		24F6ED00158A32E400CEDD41 /* libDCTPullToRefresh.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F6ECE8158A32E300CEDD41 /* libDCTPullToRefresh.a */; };
 		24F6ED06158A32E400CEDD41 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 24F6ED04158A32E400CEDD41 /* InfoPlist.strings */; };
 		24F6ED09158A32E400CEDD41 /* DCTPullToRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 24F6ED08158A32E400CEDD41 /* DCTPullToRefreshTests.m */; };
-		24F6ED18158A332B00CEDD41 /* DCTPullToRefreshController.h in Headers */ = {isa = PBXBuildFile; fileRef = 24F6ED13158A332B00CEDD41 /* DCTPullToRefreshController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24F6ED19158A332B00CEDD41 /* DCTPullToRefreshController.m in Sources */ = {isa = PBXBuildFile; fileRef = 24F6ED14158A332B00CEDD41 /* DCTPullToRefreshController.m */; };
-		24F6ED1A158A332B00CEDD41 /* DCTPullToRefreshView.h in Headers */ = {isa = PBXBuildFile; fileRef = 24F6ED15158A332B00CEDD41 /* DCTPullToRefreshView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		24F6ED1B158A332B00CEDD41 /* DCTPullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = 24F6ED16158A332B00CEDD41 /* DCTPullToRefreshView.m */; };
 		24F6ED1D158A336A00CEDD41 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F6ED1C158A336A00CEDD41 /* UIKit.framework */; };
-		24F6ED2C158A33D900CEDD41 /* DCTPullToRefresh.h in Headers */ = {isa = PBXBuildFile; fileRef = 24F6ECF0158A32E300CEDD41 /* DCTPullToRefresh.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +30,22 @@
 			remoteInfo = DCTPullToRefresh;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		24F1B05015FE4D3B00437962 /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+				24F1B09715FE4D5700437962 /* DCTPullToRefresh.h in Copy Headers */,
+				24F1B09815FE4D5700437962 /* DCTPullToRefreshController.h in Copy Headers */,
+				24F1B09915FE4D5700437962 /* DCTPullToRefreshView.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		24F6ECE8158A32E300CEDD41 /* libDCTPullToRefresh.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDCTPullToRefresh.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,19 +149,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		24F6ECE6158A32E300CEDD41 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				24F6ED2C158A33D900CEDD41 /* DCTPullToRefresh.h in Headers */,
-				24F6ED18158A332B00CEDD41 /* DCTPullToRefreshController.h in Headers */,
-				24F6ED1A158A332B00CEDD41 /* DCTPullToRefreshView.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		24F6ECE7158A32E300CEDD41 /* DCTPullToRefresh */ = {
 			isa = PBXNativeTarget;
@@ -153,7 +156,7 @@
 			buildPhases = (
 				24F6ECE4158A32E300CEDD41 /* Sources */,
 				24F6ECE5158A32E300CEDD41 /* Frameworks */,
-				24F6ECE6158A32E300CEDD41 /* Headers */,
+				24F1B05015FE4D3B00437962 /* Copy Headers */,
 			);
 			buildRules = (
 			);
