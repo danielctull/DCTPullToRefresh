@@ -15,7 +15,9 @@ NSString *const DCTPullToRefreshControllerContentOffsetKey = @"contentOffset";
 NSString * const DCTPullToRefreshStateString[] = {
 	@"DCTPullToRefreshStateIdle",
 	@"DCTPullToRefreshStatePulling",
+	@"DCTPullToRefreshStateClosing",
 	@"DCTPullToRefreshStatePulled",
+	@"DCTPullToRefreshStateReleased",
 	@"DCTPullToRefreshStateRefreshing"
 };
 
