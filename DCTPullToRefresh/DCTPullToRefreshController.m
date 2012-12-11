@@ -208,13 +208,16 @@ NSString * const DCTPullToRefreshStateString[] = {
 	CGRect frame = self.refreshingView.bounds;
 	frame.size.width = self.scrollView.bounds.size.width;
 	UIEdgeInsets insets = self.scrollView.contentInset;
-	
+	CGPoint offset = self.scrollView.contentOffset;
+
 	if (self.placement == DCTPullToRefreshPlacementTop) {
 		frame.origin.y = -frame.size.height;
 		insets.top += frame.size.height;
+		if (offset.y == 0.0f) offset.y = -insets.top;
 	} else {
 		frame.origin.y = MAX(self.scrollView.contentSize.height, (self.scrollView.bounds.size.height - frame.size.height));
 		insets.bottom += frame.size.height;
+		if (offset.y == self.scrollView.contentSize.height - self.scrollView.frame.size.height) offset.y += insets.bottom;
 	}
 		
 	self.refreshingView.frame = frame;
@@ -222,6 +225,7 @@ NSString * const DCTPullToRefreshStateString[] = {
 	
 	[UIView animateWithDuration:1.0f/3.0f animations:^{
 		self.scrollView.contentInset = insets;
+		self.scrollView.contentOffset = offset;
 	}];
 }
 
